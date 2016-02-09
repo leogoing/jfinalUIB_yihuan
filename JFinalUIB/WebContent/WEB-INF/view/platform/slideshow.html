@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<link rel="stylesheet" type="text/css" media="screen" href="${cxt!}/jsFile/css/jQuery.iPicture.css"/>
+<script type="text/javascript" src="${cxt!}/jsFile/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="${cxt!}/jsFile/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="${cxt!}/jsFile/js/jQuery.iPicture.js"></script>
+<style type="text/css">
+</style>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	$( "#iPicture" ).iPicture({
+		animation: true,
+		animationBg: "bgblack",
+		animationType: "ltr-slide",
+		pictures: ["picture1"],
+		button: "moreblack",
+		moreInfos:{"picture1":[{"id":"tooltip1","descr":"furniture: 299$","top":"185px","left":"393px"},{"id":"tooltip2","descr":"sofa: 199$","top":"346px","left":"483px"}]},
+		modify: true,
+		initialize: false
+	});
+
+  var currentPosition = 0;
+  var slideWidth = 1000;
+  var slides = $('.slide');
+  var numberOfSlides = slides.length;
+
+  // Remove scrollbar in JS
+  $('#iPicture').css('overflow', 'hidden');
+
+  // Wrap all .slides with #slideInner div
+  slides
+    .wrapAll('<div id="slideInner"></div>')
+    // Float left to display horizontally, readjust .slides width
+	.css({
+      'float' : 'left',
+      'width' : slideWidth
+    });
+
+  // Set #slideInner width equal to total width of all slides
+  $('#slideInner').css('width', slideWidth * numberOfSlides);
+
+  /*
+  // 添加控制箭头
+    $('#slideshow')
+    .prepend('<span class="control" id="leftControl" title="go to previous picture">Clicking moves left</span>')
+    .append('<span class="control" id="rightControl" title="go to next picture">Clicking moves right</span>');
+  */
+ 
+  /*
+  // 隐藏左箭头当是第一张图时
+  manageControls(currentPosition);
+  */
+
+  /*
+   $('.control')
+    .bind('click', function(){
+    // Determine new position
+	currentPosition = ($(this).attr('id')=='rightControl') ? currentPosition+1 : currentPosition-1;
+    
+	// Hide / show controls
+    manageControls(currentPosition);
+    // Move slideInner using margin-left
+    $('#slideInner').animate({
+      'marginLeft' : slideWidth*(-currentPosition)
+    });
+  });
+  
+  */
+  //创建.control的点击事件监听
+ 
+	/*
+	  // 是否隐藏左右导向箭头函数
+  function manageControls(position){
+    // 隐藏左箭头
+	if(position==0){ $('#leftControl').hide() } else{ $('#leftControl').show() }
+	// 隐藏右箭头
+    if(position==numberOfSlides-1){ $('#rightControl').hide() } else{ $('#rightControl').show() }
+  }
+	*/
+
+  
+});
+
+</script>
+
+</head>
+<body>
+<div id="pageContainer">
+	<h1>平面图编辑</h1>
+	<div id="slideshow">
+    <div id="iPicture">
+    <div class="slide"><div id="picture1" style="background: url('${cxt!}/jsFile/images/christmas.jpg') no-repeat scroll 0 0 #393737; width: 900px; height: 528px;position: relative; margin:0 auto;"></div></div><br/>
+	</div>	
+  </div>
+</div>
+</body>
+</html>

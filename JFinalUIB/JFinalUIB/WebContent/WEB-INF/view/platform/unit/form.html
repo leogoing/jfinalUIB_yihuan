@@ -1,0 +1,86 @@
+
+
+<script type="text/javascript">
+	function dataVali(form) {
+		var errorCount = formVali(form);
+		if (errorCount != 0) {
+			simpleDialog('验证提示', '有' + errorCount + '处错误，请修正！');
+			return false;
+		}
+
+		ajaxForm("content", "editForm");
+	}
+</script>
+
+<fieldset>
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.unitid"]}</label>
+		<div class="controls">
+			<input type="text" name="unit.unitid" value="${unit.unitid!}"
+				class="input-xlarge" maxlength="50" vMin="1" vType="letterNumber"
+				onblur="onblurVali(this);"> <span class="help-inline">1-50位字母数字</span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.name"]}</label>
+		<div class="controls">
+			<input type="text" name="unit.unitname"
+				value="${escapeXml(unit.unitname!)}" class="input-xlarge"
+				maxlength="25" vMin="2" vType="length" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.lat"]}</label>
+		<div class="controls">
+			<input type="text" name="unit.lat" value="${unit.lat!}"
+				class="input-xlarge" maxlength="50" vMin="1" vType=""
+				onblur="onblurVali(this);"> <span class="help-inline">浮点数</span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.lon"]}</label>
+		<div class="controls">
+			<input type="text" name="unit.lon" value="${unit.lon!}"
+				class="input-xlarge" maxlength="50" vMin="1" vType=""
+				onblur="onblurVali(this);"> <span class="help-inline">浮点数</span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.deptname"]}</label>
+		<div class="controls">
+			<input type="hidden" id="deptId" name="unit.deptids"
+				value="${escapeXml(unit.deptids!)}" /> <input type="text"
+				id="deptName" name="unit.deptname"
+				value="${escapeXml(unit.deptname!)}" class="input-xlarge focused"
+				readonly="readonly" maxlength="100" vMin="1" vType="length"
+				onblur="onblurVali(this);">
+			<button class="btn" type="button"
+				onclick="deptRadioDiaLog('deptId', 'deptName', '${escapeXml(user.departmentids!)}');">${i18nMap["admin.common.choice"]}</button>
+
+			<span class="help-inline"></span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.desc"]}</label>
+		<div class="controls">
+			<textarea name="unit.unitdesc"
+				style="cursor: text; font-size: 13px; color: #003366; width: 280px; line-height: 20px; height: 100px; font-family: Arial; cursor: text; *overflow-y: hidden; resize: none">
+			  "${escapeXml(unit.unitdesc!)}"
+			</textarea>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.pic"]}</label>
+		<div class="img-wrapper">
+			<img alt=""
+				src="http://pic27.nipic.com/20130329/4624226_181946589304_2.jpg">
+		</div> 
+	</div>
+</fieldset>

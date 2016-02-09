@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+	用户sql
+-->
+<sql-statement namespace="platform.unitpic">
+	
+	<!-- 查询所有用户 -->
+	<sql id="all">
+		<![CDATA[ 
+        	select ids from pt_unitpic
+    	]]>
+	</sql>
+	
+	<!-- 根据unit批量查找 -->
+	<sql id="batchByUnit">
+		<![CDATA[
+			select * from pt_unitpic where unitids in (
+		]]>
+	</sql>
+	
+	<!-- 查询单位，自定义字段和值 -->
+	<sql id="column">
+		<![CDATA[ 
+        	select * from pt_unitpic where ${column} = ?
+    	]]>
+	</sql>
+	
+	<!-- 动态SQL处理 -->
+	<sql id="splitPage">
+		<![CDATA[ 
+        	from pt_unitpic u 
+			where 1=1 
+			
+			<% if(!isEmpty(levelname)){ %>
+					and u.levelname like #'%$levelname$%'#
+			<% } %>
+			
+			<% if(!isEmpty(status)){ %>
+					and ui.status like #'%$status$%'#
+			<% } %>
+			
+			<% if(!isEmpty(unitids)){ %>
+					and u.unitids = #'$unitids$'#
+			<% } %>
+    	]]>
+	</sql>
+
+</sql-statement>

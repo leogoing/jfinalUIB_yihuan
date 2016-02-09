@@ -1,0 +1,413 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport"
+			content="initial-scale=1, maximum-scale=1,user-scalable=no">
+		<title>消防兴趣点ss</title>
+
+		<link rel="stylesheet" href="http://localhost:8080/arcgis_js_api/3.11/3.11/dijit/themes/claro/claro.css">
+		<link rel="stylesheet" href="http://localhost:8080/arcgis_js_api/3.11/3.11/esri/css/esri.css"/>
+
+		<style>
+			html,body {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+				overflow: hidden;
+			}
+			
+			#mywin {
+				display: none;
+				top: 20px;
+				left: 30px;
+				text-align: center;
+				border: solid 1px;
+				padding: 10px;
+				z-index: -1000;
+			}
+			
+			#map {
+				padding: 0;
+			}
+			
+			#header {
+				font-size: 1.1em;
+				font-family: sans-serif;
+				padding-left: 1em;
+				padding-top: 4px;
+				color: #660000;
+			}
+			
+			.templatePicker {
+				border: none;
+			}
+			
+			.dj_ie .infowindow .window .top .right .user .content {
+				position: relative;
+			}
+			
+			.dj_ie .simpleInfoWindow .content {
+				position: relative;
+			}
+			
+			.scroll-pane {
+				overflow: auto;
+				width: 99%; height 500px;
+				float: left;
+			}
+			
+			.scroll-content {
+				width: 2440px;
+				float: left;
+			}
+			
+			.scroll-content-item {
+				width: 100px;
+				height: 120px;
+				float: left;
+			}
+			
+			.scroll-bar-wrap {
+				clear: left;
+				padding: 0 4px 0 2px;
+				margin: 0 -1px -1px -1px;
+			}
+			
+			.scroll-bar-wrap .ui-slider {
+				background: none;
+				border: 0;
+				height: 2em;
+				margin: 0 auto;
+			}
+			
+			.scroll-bar-wrap .ui-handle-helper-parent {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				margin: 0 auto;
+			}
+			
+			.scroll-bar-wrap .ui-slider-handle {
+				top: .2em;
+				height: 1.5em;
+			}
+			
+			.scroll-bar-wrap .ui-slider-handle .ui-icon {
+				margin: -8px auto 0;
+				position: relative;
+				top: 50%;
+			}
+		</style>
+
+		<title>POI</title>
+
+		<link rel="stylesheet" href="css/tabs.css" type="text/css" media="screen, projection" />
+		<script src="http://localhost:8080/arcgis_js_api/3.11/3.11/init.js"></script>
+		
+		<script>
+	      var map, navToolbar,navOption;
+	      
+	      require([
+			"dojo/dom",
+	        "dojo/dom-construct",
+	        "esri/map", 
+	        "esri/tasks/GeometryService",
+	        "esri/toolbars/edit",
+	        "esri/layers/ArcGISTiledMapServiceLayer",
+	        "esri/layers/ArcGISTiledMapServiceLayer", 
+	        "esri/layers/FeatureLayer",
+			"esri/dijit/InfoWindow",
+			"esri/InfoTemplate", 
+			"esri/symbols/SimpleFillSymbol", 
+			"esri/renderers/SimpleRenderer",
+			"dijit/layout/ContentPane", "dijit/layout/TabContainer",
+	        "esri/toolbars/navigation", 
+	        "esri/Color",
+	        "esri/symbols/SimpleMarkerSymbol",
+	        "esri/symbols/SimpleLineSymbol",
+	        "esri/dijit/editing/Editor",
+	        "esri/dijit/editing/TemplatePicker",
+	        "esri/config",
+	        "dojo/i18n!esri/nls/jsapi",
+	        "dojo/query",'dojo/_base/fx', "dojo/fx/easing",
+	        "dojo/_base/array", "dojo/parser", "dojo/keys",
+	        "dijit/layout/BorderContainer", "dijit/layout/ContentPane", 
+	        "dojo/domReady!"
+	      ], function(dom, domConstruct,
+	        Map, GeometryService, Edit,
+	        ArcGISTiledMapServiceLayer, Tiled, FeatureLayer,
+			InfoTemplate, InfoWindow, SimpleFillSymbol, SimpleRenderer,
+			ContentPane, TabContainer, 
+			Navigation,
+	        Color, SimpleMarkerSymbol, SimpleLineSymbol, 
+	        Editor, TemplatePicker,
+	        esriConfig, jsapiBundle,
+	        query, fx, easing,
+	        arrayUtils, parser, keys
+	      ) {
+			parser.parse();
+	
+			//var infoWin = new  InfoWindow({
+		    //      domNode: domConstruct.create("div", null, dom.byId("mywin"))
+		    //   });
+
+	        esriConfig.defaults.io.proxyUrl = "/proxy/";    
+
+	        map = new Map("map"//, {infoWindow: infoWin}
+	        );
+	
+			var template = new esri.InfoTemplate();
+	        template.setTitle("POI");
+	        template.setContent(getWindowContent);
+
+	        var tiled = new Tiled("http://localhost:6080/arcgis/rest/services/MyMapService/MapServer");
+	        map.addLayer(tiled);
+	
+			map.on("layers-add-result", initEditor);
+
+	        var poiFL = new FeatureLayer("http://localhost:6080/arcgis/rest/services/poi/FeatureServer/0", {
+	          mode: FeatureLayer.MODE_ONDEMAND,
+	          infoTemplate: template,
+	          outFields: ["*"]
+	        });
+	
+	        map.addLayers([poiFL]);
+
+			// 左侧编辑功能
+	        function initEditor(evt) {
+				var templateLayers = arrayUtils.map(evt.layers, function(result){
+	            	return result.layer;
+				});
+	
+				var templatePicker = new TemplatePicker({
+		        	featureLayers: templateLayers,
+		            grouping: true,
+		            rows: "auto",
+		            columns: 1
+		          }, "templatePickDiv");
+		        templatePicker.startup();
+	
+		        var layers = arrayUtils.map(evt.layers, function(result) {
+		            return { featureLayer: result.layer };
+		        });
+	          
+		        var settings = {
+		            map: map,
+		            templatePicker: templatePicker,
+		            layerInfos: layers,
+		            toolbarVisible: true,
+		            createOptions: {
+		              polylineDrawTools:[ Editor.CREATE_TOOL_FREEHAND_POLYLINE ],
+		              polygonDrawTools: [ Editor.CREATE_TOOL_FREEHAND_POLYGON,
+		                Editor.CREATE_TOOL_CIRCLE,
+		                Editor.CREATE_TOOL_TRIANGLE,
+		                Editor.CREATE_TOOL_RECTANGLE
+		              ]
+		            },
+		            toolbarOptions: {
+		              reshapeVisible: true
+		            }
+		        };
+	
+		        var params = {settings: settings};    
+		        var myEditor = new Editor(params, 'editorDiv');
+		        myEditor.startup();
+		        
+		        setupNavBar(); // 初始化导航工具条
+	        } // end initEditor
+	        
+	        // 初始化导航工具条
+	        function setupNavBar() {
+	        	navToolbar = new Navigation(map);
+	
+	       		query(".navItem img").onmouseover(
+	       			function (evt) {
+	            		fx.anim(evt.target.parentNode, {}, 200, easing.bounceOut);
+	                }
+	            ).onmouseout(
+	            	function (evt) {
+	            		if (evt.target.parentNode.id != navOption) {
+	                    	fx.anim(evt.target.parentNode, {});
+	                        }
+	                    else {
+	                    	fx.anim(evt.target.parentNode, {});
+	                    }
+	                }
+	            ).onclick(function (evt) {
+	            	fx.anim(evt.target.parentNode, {}, 200, easing.linear, 
+	            		function () {
+	                    	dojo.anim(evt.target.parentNode, {}, 0);
+	                    }
+	                );
+	                
+	                navEvent(evt.target.parentNode.id);
+	            });
+	
+	            // 将漫游设置为默认操作
+	            navEvent('deactivate');
+	        }
+	
+	        function navEvent(id) {
+	        	switch (id) {
+	            	case 'pan':
+	                	map.enablePan();
+	                    navToolbar.activate(Navigation.PAN);
+	
+	                    if (navOption) {
+	                    	fx.anim(document.getElementById(navOption), {
+	                        	backgroundColor: '#FFFFFF'
+	                        });
+	                    }
+	                    
+	                    navOption = id;
+	                    break;
+	                    
+	                case 'zoomprev':
+	                	navToolbar.zoomToPrevExtent();
+	                    break;
+	                    
+	                case 'zoomnext':
+	               		navToolbar.zoomToNextExtent();
+	               		break;
+	               
+	                case 'extent':
+	               		navToolbar.zoomToFullExtent();
+	                    break;
+	                        
+	                case 'zoomin':
+	                	navToolbar.activate(Navigation.ZOOM_IN);
+	                    if (navOption) {
+	                    	fx.anim(document.getElementById(navOption), {
+	                        	 backgroundColor: '#FFFFFF'
+	                        });
+	                     }
+	                     
+	                     navOption = id;
+	                     break;
+	                        
+	                case 'zoomout':
+	                	navToolbar.activate(Navigation.ZOOM_OUT);
+	                    if (navOption) {
+	                    	fx.anim(document.getElementById(navOption), {
+	                        	backgroundColor: '#FFFFFF'
+	                        });
+	                    }
+	                    
+						navOption = id;
+	                    break;
+	                case 'deactivate':
+	                	navToolbar.deactivate();
+	                    if (navOption) {
+	                    	fx.anim(document.getElementById(navOption), {
+	                        	backgroundColor: '#FFFFFF'
+	                        });
+	                    }
+	                    
+	                    navOption = id;
+	                    break;
+	        	}
+	        }
+
+			// 生成InfoWind内容
+			function getWindowContent(graphic) {
+			
+				return "<iframe src=\"http://localhost:8080/xf/webs/loadAllUsers.action\"> </iframe>";
+				/*// Make a tab container.
+			    var tc = new TabContainer({
+			    	style: "width:100%;height:100%;"
+			    }, domConstruct.create("div"));
+			
+			    var cp1 = new ContentPane({
+			    	title: "重点单位信息",
+			    	content: "单位名称：" + graphic.attributes["Id"] + "<br>单位 描述</br>"
+			    	+ "<iframe src=\"http://localhost:8080/xf/webs/loadAllUsers.action\"> </iframe>"
+			    });
+			    
+			    var cp2 = new ContentPane({
+			    	title: "平面图"
+			    });
+				
+				var cp3 = new ContentPane({
+			    	title: "立面图"
+			    });
+					  
+			    tc.addChild(cp1);
+			    tc.addChild(cp2);
+				tc.addChild(cp3);
+				var str =  "<br>Median Age (Female):<br/> " + 
+					  	"   <img src='" + "images/1.jpg" + "' onclick='" + 
+					  	"javascript:openLiuzm();" + "'/>" + 
+					  	"   <img src='" + "images/1.jpg" + "' onclick='" + 
+					  	"javascript:openLiuzm();" + "'/>" ;
+				cp2.set("content",str);
+				cp3.set("content",str);
+				
+			    return tc.domNode;*/
+	        }
+	      });
+	    </script>
+	</head>
+	
+	<body class="claro">
+		<jsp:include page="/menu.jsp" />
+
+		<div id="mywin">
+			<img id="cc" src="images/cc.jpg" onmousewheel="return bbimg(this)"
+				width="265" height="160">
+			<input type="button" value="提交" />
+			<a href="javascript:close();">关闭</a>
+			<img id="dddd" src="images/zoomin.png" onclick="ImageSuofang2(true)">
+		</div>
+
+		<div id="main" data-dojo-type="dijit/layout/BorderContainer"
+			data-dojo-props="design:'headline'"
+			style="height: width :   100%; height: 100%;">
+			<!-- 左侧兴趣点图标列表 -->
+			<div data-dojo-type="dijit/layout/ContentPane"
+				data-dojo-props="region:'left'"
+				style="width: 100px; overflow: hidden; display:none">
+				<div id="templatePickDiv"></div>
+				<div id="editorDiv" ></div>
+			</div>
+
+			<!-- 右侧地图展示区 -->
+			<div data-dojo-type="dijit/layout/ContentPane" id="map"
+				data-dojo-props="region:'center'">
+				
+				<div id="zoomin" data-dojo-type="dijit/layout/ContentPane"
+					class="navItem" data-dojo-props="splitter:'false'"
+					style="Z-INDEX: 51; RIGHT: 240px; CURSOR: hand; POSITION: absolute; TOP: 50px； float :   left; width: 40px; height: 40px; border: 0px solid #DADADA; padding: 5px; margin-top: 0px; vertical-align: middle; overflow: hidden;">
+					<img class="navItem" alt="" src="${cxt!}/images/zoomin.png" title="放大" />
+				</div>
+				<div id="zoomout" data-dojo-type="dijit/layout/ContentPane"
+					class="navItem" data-dojo-props="splitter:'false'"
+					style="Z-INDEX: 51; RIGHT: 202px; CURSOR: hand; POSITION: absolute; TOP: 50px； float :   left; width: 40px; height: 40px; border: 0px solid #DADADA; padding: 5px; margin-top: 0px; vertical-align: middle; overflow: hidden;">
+					<img class="navItem" alt="" src="${cxt!}/images/zoomout.png" title="缩小" />
+				</div>
+				<div id="extent" data-dojo-type="dijit/layout/ContentPane"
+					class="navItem" data-dojo-props="splitter:'false'"
+					style="Z-INDEX: 51; margin-top: 0px; RIGHT: 158PX; CURSOR: hand; POSITION: absolute; TOP: 0px；float :   left; width: 35px; height: 35px; border: 0px solid #DADADA; padding: 5px; vertical-align: middle; overflow: hidden;">
+					<img class="navItem" margin-top:20px; alt="" src="${cxt!}/images/web.png"
+						title="全图" />
+				</div>
+				<div id="zoomprev" data-dojo-type="dijit/layout/ContentPane"
+					class="navItem" data-dojo-props="splitter:'false'"
+					style="Z-INDEX: 51; margin-top: 0px; RIGHT: 112px; CURSOR: hand; POSITION: absolute; TOP: 0px；float :   left; width: 35px; height: 35px; border: 0px solid #DADADA; padding: 5px; vertical-align: middle; overflow: hidden;">
+					<img class="navItem" alt="" src="${cxt!}/images/left.png" title="前一视图" />
+				</div>
+				<div id="zoomnext" data-dojo-type="dijit/layout/ContentPane"
+					class="navItem" data-dojo-props="splitter:'false'"
+					style="Z-INDEX: 51; margin-top: 0px; RIGHT: 68px; CURSOR: hand; POSITION: absolute; TOP: 0px；float :   left; width: 35px; height: 35px; border: 0px solid #DADADA; padding: 5px; vertical-align: middle; overflow: hidden;">
+					<img class="navItem" alt="" src="${cxt!}/images/right.png" name="zoomnext"
+						title="后一视图" />
+				</div>
+				<div id="pan" data-dojo-type="dijit/layout/ContentPane"
+					class="navItem" data-dojo-props="splitter:'false'"
+					style="Z-INDEX: 51; margin-top: 0px; width: 30px; height: 30px; RIGHT: 24px; CURSOR: hand; POSITION: absolute; TOP: 0px；float :   left; width: 35px; height: 35px; border: 0px solid #DADADA; padding: 5px; margin-bottom: 3px; vertical-align: middle; overflow: hidden;">
+					<img class="navItem" title="漫游" alt="" src="${cxt!}/images/hand.png" />
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

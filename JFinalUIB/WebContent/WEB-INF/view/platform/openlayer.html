@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>地图</title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Charisma">
+	<meta name="author" content="lucky">
+
+	<!-- The styles -->
+	<link id="bs-css" href="${cxt!}/ui/charisma/css/bootstrap-united.css" rel="stylesheet">
+	<style type="text/css">
+	  body {
+		padding-bottom: 40px;
+	  }
+	  .sidebar-nav {
+		padding: 9px 0;
+	  }
+	</style>
+	
+	<link href="${cxt!}/ui/charisma/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="${cxt!}/ui/charisma/css/charisma-app.css" rel="stylesheet">
+	<link href="${cxt!}/ui/charisma/css/jquery-ui-1.8.21.custom.css" rel="stylesheet">
+	<link href='${cxt!}/ui/charisma/css/fullcalendar.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/fullcalendar.print.css' rel='stylesheet'  media='print'>
+	<link href='${cxt!}/ui/charisma/css/chosen.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/uniform.default.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/colorbox.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/jquery.cleditor.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/jquery.noty.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/noty_theme_default.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/elfinder.min.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/elfinder.theme.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/jquery.iphone.toggle.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/opa-icons.css' rel='stylesheet'>
+	<link href='${cxt!}/ui/charisma/css/uploadify.css' rel='stylesheet'>
+	
+	<link rel="stylesheet" href="${cxt!}/jsFile/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+	<style type="text/css">
+		.ztree li span.button.name {margin-right:2px; background-position:-126px 0; vertical-align:top; *vertical-align:middle}
+		.ztree li span.button.operator {margin-right:2px; background-position:-126px -64px; vertical-align:top; *vertical-align:middle}
+		.ztree li span.button.param {margin-right:2px; background-position:-126px 0; vertical-align:top; *vertical-align:middle}
+		.ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0; vertical-align:top; *vertical-align:middle}
+		.ztree li span.button.icon {margin-right:2px; background-position:-126px -80px; vertical-align:top; *vertical-align:middle}
+	</style>
+	
+	<link rel="stylesheet" href="${cxt!}/jsFile/charisma/jquery-ui-timepicker-addon.css" type="text/css">
+	<link rel="stylesheet" href="${cxt!}/jsFile/ueditor/third-party/webuploader/webuploader.css" type="text/css">
+	<link rel="stylesheet" href="${cxt!}/jsFile/artDialog/css/ui-dialog.css" type="text/css"/>
+	
+	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- The fav icon -->
+	<link rel="icon" href="${cxt!}/files/images/favicon.ico" type="image/x-icon" />
+	<link rel="shortcut icon" href="${cxt!}/files/images/favicon.ico" type="image/x-icon" />
+	
+	<script type="text/javascript">
+		var cxt = "${cxt!}";
+	</script>
+	
+	<% include("/platform/i18n.html"){} %>
+
+	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.css" type="text/css">
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.6.0/ol.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/myajax.js"></script>
+	
+	<script type="text/javascript" src="${cxt!}/jsFile/jquery/jquery.form.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/charisma/utils.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/charisma/common.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/charisma/jquery-ui-timepicker-addon.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/zTree/js/jquery.ztree.core-3.5.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/zTree/js/jquery.ztree.excheck-3.5.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/zTree/js/jquery.ztree.exedit-3.5.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/echarts/echarts-all.js"></script>
+	<script type="text/javascript" charset="utf-8" src="${cxt!}/jsFile/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" charset="utf-8" src="${cxt!}/jsFile/ueditor/ueditor.all.min.js"> </script>
+	<script type="text/javascript" charset="utf-8" src="${cxt!}/jsFile/ueditor/lang/zh-cn/zh-cn.js"></script>
+	<script type="text/javascript" charset="utf-8" src="${cxt!}/jsFile/ueditor/third-party/webuploader/webuploader.js"></script>
+	<script type="text/javascript" charset="utf-8" src="${cxt!}/jsFile/autoComplete.js"></script>
+	<script type="text/javascript" src="${cxt!}/jsFile/artDialog/dist/dialog-min.js"></script>
+		
+</head>
+<body>
+	<div class="container-fluid">
+	
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div id="map" style="position:absolute;z-index:2; width:100%; height:100%"></div>
+	    <div id="content2" style="position:absolute;z-index:3;opacity:1;">
+		  <!-- content starts -->
+					
+		  <!-- content ends -->
+		</div><!--/#content.span10-->
+	  </div>
+	</div>
+	
+	<div id="myModal" class="modal ">
+		<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd</h3>
+		</div>
+		
+		<div class="modal-footer">
+			<a href="#" class="btn" data-dismiss="modal">close</a>
+			<a href="#" class="btn btn-primary" data-dismiss="modal" onclick="setCheckValue();">${i18nMap["admin.common.determine"]}</a>
+		</div>
+	</div>
+	
+	</div>
+
+	<script>
+		var wmsSource = new ol.source.ImageWMS({
+		  url: 'http://127.0.0.1:8081/geoserver/wms',
+		  params: {LAYERS: 'jyx:pt_unit'},
+		  serverType: 'geoserver',
+		  crossOrigin: ''
+		});
+		
+		var wmsLayer = new ol.layer.Image({
+		  source: wmsSource
+		});
+		
+		var view = new ol.View({
+		  center: [0, 0],
+		  zoom: 1
+		});
+		
+		var url = 'http://127.0.0.1:6080/arcgis/rest/services/MyMapService/MapServer';
+		var mapLayer = new ol.layer.Tile({
+		    extent: [12889805, 3323711, 12914800, 3341750],
+		    source: new ol.source.TileArcGISRest({
+		      url: url
+		    })
+		  });
+		
+		// geowebcache底图
+		var mayLayer2 = new ol.layer.Tile({
+		    source: new ol.source.TileWMS({
+		      url: 'http://127.0.0.1:8080/geowebcache/service/wms',
+		      params: {'LAYERS': 'nanchang2',Width:256, Height:256, 'SRS':'EPSG:3857', FORMAT:'image/jpeg', VERSION:'1.1.1' }
+		    })
+		  });
+		
+		var map = new ol.Map({
+		  layers: [mayLayer2, wmsLayer],
+		  target: 'map',
+		  view: new ol.View({
+		    center: ol.proj.fromLonLat([115.89, 28.68]),
+		    zoom: 12
+		  })
+		});
+		
+		map.on('singleclick', function(evt) {
+			
+		var viewResolution = /** @type {number} */ (view.getResolution());
+		var url = wmsSource.getGetFeatureInfoUrl(
+		    evt.coordinate, viewResolution, 'EPSG:3857',
+		    {'INFO_FORMAT': 'text/xml'});
+		    
+		if (url) {
+		    //document.getElementById('info').innerHTML =
+		    //    '<iframe seamless src="' + url + '"></iframe>';
+		
+			//jQuery.support.cors = true;
+			$.ajax({
+				dataType:'xml',
+				url:url,
+				success:function(xml) { // 成功取得兴趣点信息
+		        	var unit=xml.getElementsByTagName("jyx:pt_unit");
+		        	//alert(unit[0].getElementsByTagName("jyx:unitid")[0].childNodes[0].nodeValue);
+		        	if(unit !== null && unit[0] !== null && unit[0].getAttribute("fid") !== null) 
+		        	{// 打开对话框编辑兴趣点
+		        		//alert('/jf/platform/unit/mapedit/' + unit[0].getAttribute("fid").slice(8));
+		        		//ajaxContent('/jf/platform/unit/mapedit/' + unit[0].getAttribute("fid").slice(8));
+		        		
+		        		alert(unit[0].getAttribute("fid"));
+		        		
+		        		//$('#content').parent().append('<div id="loading" class="center">Loading...<div class="center"></div></div>');
+		        		$.ajax({
+		        			type : "post",
+		        			url : cxt + "/jf/platform/unit/mapedit/" + unit[0].getAttribute("fid").slice(8),
+		        			//data : { "toUrl" : "/platform/department/userTree.html", "ids" : deptId },
+		        			dataType : "html",
+		        			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+		        			async: false,
+		        			success:function(data){
+		        				alert(data);
+		        				$('#myModal').html(data);
+		        				$('#myModal').modal('show');
+		        		    	$('#loading').remove();
+		        				$('#content').fadeIn();
+		        			}
+		        		});
+		        	}
+		    	},
+		    	error:function(XMLHttpRequest, textStatus, errorThrown){
+		    		alert(errorThrown); 
+		    		alert(XMLHttpRequest.status);
+		    		alert(XMLHttpRequest.readyState);
+		    		alert(textStatus);
+		    	}
+		  	});
+		    
+		    /*AjaxUtil.request({
+				url:url,
+				params:{},
+				type:'xml',
+				callback:process
+			});
+		
+			function process(xml){
+				if(xml){
+					var totalNodes = $('*',xml).length;
+			    	alert("This XML file has " + totalNodes); 
+			
+			    	var unit=xml.getElementsByTagName("jyx:pt_unit");
+			    	alert(unit[0]);
+			    	alert(unit[0].getElementsByTagName("jyx:unitid")[0].childNodes[0].nodeValue);
+				}
+				else{
+				}
+			}*/
+		    
+		  }
+		});
+		
+		map.on('pointermove', function(evt) {
+		  if (evt.dragging) {
+		    return;
+		  }
+		  //var pixel = map.getEventPixel(evt.originalEvent);
+		  //var hit = map.forEachLayerAtPixel(pixel, function(layer) {
+		  //  return true;
+		  //});
+		  //map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+		});
+		
+	</script>
+</body>
+</html>

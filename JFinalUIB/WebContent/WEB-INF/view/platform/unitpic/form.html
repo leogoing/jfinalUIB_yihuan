@@ -1,0 +1,45 @@
+
+<script type="text/javascript">
+
+function dataVali(form){
+	var errorCount = formVali(form);
+	if(errorCount != 0){
+		simpleDialog('验证提示', '有'+errorCount+'处错误，请修正！');
+ 		return false;
+	}
+	
+	ajaxForm("content", "editForm");
+}
+
+</script>
+
+<fieldset>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unitpic.property.levelname"]}</label>
+		<div class="controls">
+			<input type="text" name="unitPic.levelname" value="${escapeXml(unitpic.levelname!)}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.name"]}</label>
+		<div class="controls">
+			<input type="hidden" id="unitIds" name="unitPic.unitids" value="${escapeXml(unitpic.unitids!)}"/>
+			<input type="text" id="unitName" name="unitPic.unitname" value="${escapeXml(unitpic.unitname!)}" 
+				class="input-xlarge focused" readonly="readonly" maxlength="100" vMin="1" vType="length" onblur="onblurVali(this);">
+			<button class="btn" type="button" onclick="unitRadioDiaLog('unitIds', 'unitName', '${escapeXml(unitpic.unitids!)}');">${i18nMap["admin.common.choice"]}</button>
+			<span class="help-inline"></span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unitpic.property.levelpic"]}</label>
+		<div class="controls">
+			<input name="unitPic.levelpic"  type="file" />
+		</div>
+	</div>
+
+</fieldset>

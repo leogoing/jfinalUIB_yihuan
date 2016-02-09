@@ -1,0 +1,36 @@
+
+<script type="text/javascript">
+
+function dataVali(form){
+	var errorCount = formVali(form);
+	if(errorCount != 0){
+		simpleDialog('验证提示', '有'+errorCount+'处错误，请修正！');
+ 		return false;
+	}
+	
+	ajaxForm("content", "editForm");
+}
+
+</script>
+
+<fieldset>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devtype.property.code"]}</label>
+		<div class="controls">
+			<input type="text" name="devType.code" value="${devtype.code!}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devtype.property.name"]}</label>
+		<div class="controls">
+			<input type="text" name="devType.name" value="${escapeXml(devtype.name!)}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+</fieldset>

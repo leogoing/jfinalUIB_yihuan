@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="../jsFile/jquery/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript">
+		var arr=[{ids:'349d0a1b85ac419b9e11d8147f81bd2e',version:1},{ids:'3d32f588984f41cfbe7a3ba18a1ffa03',version:0}];
+		var a=[{userids:'03a44ba0aa4e4905bea726d4da976ba5',version:1}];
+		function ab(){$.ajax({
+			url:'/jf/platform/updatepack/checkForUser',
+			dataType:'json',
+			type:'post',
+			data:{'departJson':JSON.stringify(arr),'userJson':JSON.stringify(a)},
+			success:function(result){
+				alert('ok');
+				console.log(result.updatelist);
+			},
+			error:function(){
+				alert('error');
+			}
+		});}
+		$(function(){
+			$('form input').val(b);
+		});
+	</script>
+</head>
+	<body>
+		welcome!!!!
+		<form action="/jf/platform/updatepack/sendPack" id="form" method="post">
+			<input name="json" value="[1,2]"/>
+			<!-- input name="departJson" value="['349d0a1b85ac419b9e11d8147f81bd2e']"/> -->
+			<button> tijiao</button>
+		</form>
+		<a href="javascript:" onclick="ab();">sdaddasd</a>
+	</body>
+</html>

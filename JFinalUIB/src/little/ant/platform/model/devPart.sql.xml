@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+	用户sql
+-->
+<sql-statement namespace="platform.devpart">
+	
+	<!-- 查询所有用户 -->
+	<sql id="all">
+		<![CDATA[ 
+        	select ids from pt_devpart
+    	]]>
+	</sql>
+	
+	<!-- 查询单位，自定义字段和值 -->
+	<sql id="column">
+		<![CDATA[ 
+        	select * from pt_devpart where ${column} = ?
+    	]]>
+	</sql>
+	
+	<!-- 动态SQL处理 -->
+	<sql id="splitPage">
+		<![CDATA[ 
+        	from pt_devpart u 
+			where 1=1 
+
+			<% if(!isEmpty(unitids)){ %>
+					and u.unitids = #'$unitids$'#
+			<% } %>
+			
+			<% if(!isEmpty(unitpicids)){ %>
+					and u.unitpicids = #'$unitpicids$'#
+			<% } %>
+    	]]>
+	</sql>
+
+
+</sql-statement>

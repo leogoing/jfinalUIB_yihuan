@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+	用户sql
+-->
+<sql-statement namespace="platform.devtype">
+	
+	<!-- 查询所有用户 -->
+	<sql id="all">
+		<![CDATA[ 
+        	select ids from pt_devtype
+    	]]>
+	</sql>
+	
+	<!-- 查询单位，自定义字段和值 -->
+	<sql id="column">
+		<![CDATA[ 
+        	select * from pt_devtype where ${column} = ?
+    	]]>
+	</sql>
+	
+	<!-- 动态SQL处理 -->
+	<sql id="splitPage">
+		<![CDATA[
+        	from pt_devtype u 
+			where 1=1 
+
+			<% if(!isEmpty(code)){ %>
+					and u.code = #'$code$'#
+			<% } %>
+			
+			<% if(!isEmpty(name)){ %>
+					and u.name like #'%$name$%'#
+			<% } %>
+    	]]>
+	</sql>
+	
+	<!-- 根节点 -->
+	<sql id="root">
+		<![CDATA[
+        	select ids, name as names, false from pt_devtype
+    	]]>
+	</sql>
+
+</sql-statement>

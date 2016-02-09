@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+	用户sql
+-->
+<sql-statement namespace="platform.unit">
+
+	<!-- 根据部门查询重点单位版本号 -->
+	<sql id="deptunit">
+		<![CDATA[ 
+        	select unitid,ver,unitname from pt_unit where deptids in (
+    	]]>
+	</sql>
+	
+	<!-- 查询所有版本号 -->
+	<sql id="verunit">
+		<![CDATA[
+			 select unitid,ver,unitname from pt_unit where 
+		]]>
+	</sql>
+	
+	<!-- 通过unitid批量查找 -->
+	<sql id="batchById">
+		<![CDATA[
+			select ids,unitname,unitdesc,offsetx,offsety,markoffsetx,markoffsety,ver,x,y,z,levels,
+			unitid,status,lat,lon,deptids,deptname,AsText(the_geom) as point from pt_unit where unitid in (
+		]]>
+	</sql>
+	
+	<!-- 通过unitid批量查找ids -->
+	<sql id="batchById2">
+		<![CDATA[
+			select ids from pt_unit where unitid in (
+		]]>
+	</sql>
+	
+	<!-- 查询单个版本号 -->
+	<sql id="findVer">
+		<![CDATA[
+			select ids,ver from pt_unit where ${column} = ?
+		]]>
+	</sql>
+	
+	<!-- 查询所有用户 -->
+	<sql id="all">
+		<![CDATA[ 
+        	select ids from pt_unit
+    	]]>
+	</sql>
+	
+	<!-- 查询单位，自定义字段和值 -->
+	<sql id="column">
+		<![CDATA[ 
+        	select * from pt_unit where ${column} = ?
+    	]]>
+	</sql>
+	
+	<!-- 动态SQL处理 -->
+	<sql id="splitPage">
+		<![CDATA[ 
+        	from pt_unit u 
+			where 1=1 
+			<% if(!isEmpty(unitid)){ %>
+					and u.unitid = #'$unitid$'#
+			<% } %>
+			
+			<% if(!isEmpty(unitname)){ %>
+					and u.unitname like #'%$unitname$%'#
+			<% } %>
+			
+			<% if(!isEmpty(status)){ %>
+					and ui.status like #'%$status$%'#
+			<% } %>
+			
+			<% if(!isEmpty(deptids)){ %>
+					and u.deptids = #'$deptids$'#
+			<% } %>
+    	]]>
+	</sql>
+
+</sql-statement>

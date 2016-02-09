@@ -1,0 +1,113 @@
+
+<script type="text/javascript">
+
+function dataVali(form){
+	var errorCount = formVali(form);
+	if(errorCount != 0){
+		simpleDialog('验证提示', '有'+errorCount+'处错误，请修正！');
+ 		return false;
+	}
+	
+	ajaxForm("content", "editForm");
+}
+
+</script>
+
+<fieldset>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.name"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.name" value="${escapeXml(devpart.name!)}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.unit.property.name"]}</label>
+		<div class="controls">
+			<input type="hidden" id="unitIds" name="devPart.unitids" value="${escapeXml(devpart.unitids!)}"/>
+			<input type="text" id="unitName" name="devPart.unitname" value="${escapeXml(devpart.unitname!)}" 
+				class="input-xlarge focused" readonly="readonly" maxlength="100" vMin="1" vType="length" onblur="onblurVali(this);">
+			<button class="btn" type="button" onclick="unitRadioDiaLog('unitIds', 'unitName', '${escapeXml(devpart.unitids!)}');">${i18nMap["admin.common.choice"]}</button>
+			<span class="help-inline"></span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.parttypename"]}</label>
+		<div class="controls">
+			<input type="hidden" id="typeId" name="devPart.parttypeids" value="${escapeXml(devpart.parttypeids!)}"/>
+			<input type="text" id="typeName" name="devPart.parttypename" value="${escapeXml(devpart.parttypename!)}" 
+				class="input-xlarge" readonly="readonly" maxlength="100" vMin="1" vType="length" onblur="onblurVali(this);">
+			<button class="btn" type="button" onclick="devtypeRadioDiaLog('typeId', 'typeName', '${escapeXml(devpart.parttypeids!)}');">${i18nMap["admin.common.choice"]}</button>
+			<span class="help-inline"></span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.partvendorname"]}</label>
+		<div class="controls">
+			<input type="hidden" id="vendorId" name="devPart.partvendorids" value="${escapeXml(devpart.partvendorids!)}"/>
+			<input type="text" id="vendorName" name="devPart.partvendorname" value="${escapeXml(devpart.partvendorname!)}" 
+				class="input-xlarge" readonly="readonly" maxlength="100" vMin="1" vType="length" onblur="onblurVali(this);">
+			<button class="btn" type="button" onclick="devvendorRadioDiaLog('vendorId', 'vendorName', '${escapeXml(devpart.partvendorids!)}');">${i18nMap["admin.common.choice"]}</button>
+			<span class="help-inline"></span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.deviceid"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.deviceid" value="${devpart.deviceid!}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.loopid"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.loopid" value="${devpart.loopid!}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.addr"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.addr" value="${devpart.addr!}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.offx"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.offx" value="${devpart.offx!}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.offy"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.offy" value="${devpart.offy!}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+	
+	<div class="control-group">
+		<label class="control-label">${i18nMap["admin.devpart.property.desc"]}</label>
+		<div class="controls">
+			<input type="text" name="devPart.desc" value="${escapeXml(devpart.desc!)}" 
+				class="input-xlarge" maxlength="50" vMin="1" vType="" onblur="onblurVali(this);">
+			<span class="help-inline">2-50个任意字符</span>
+		</div>
+	</div>
+</fieldset>

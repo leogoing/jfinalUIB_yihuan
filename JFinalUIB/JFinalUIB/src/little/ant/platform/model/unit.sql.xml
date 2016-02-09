@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+	用户sql
+-->
+<sql-statement namespace="platform.unit">
+
+	<!-- 查询部门下的单位 -->
+	<sql id="deptunit">
+		<![CDATA[ 
+        	select ids, unitname from pt_unit where deptids = ?
+    	]]>
+	</sql>
+	
+	<!-- 查询所有用户 -->
+	<sql id="all">
+		<![CDATA[ 
+        	select ids from pt_unit
+    	]]>
+	</sql>
+	
+	<!-- 查询单位，自定义字段和值 -->
+	<sql id="column">
+		<![CDATA[ 
+        	select * from pt_unit where ${column} = ?
+    	]]>
+	</sql>
+	
+	<!-- 动态SQL处理 -->
+	<sql id="splitPage">
+		<![CDATA[ 
+        	from pt_unit u 
+			where 1=1 
+			<% if(!isEmpty(unitid)){ %>
+					and u.unitid = #'$unitid$'#
+			<% } %>
+			
+			<% if(!isEmpty(unitname)){ %>
+					and u.unitname like #'%$unitname$%'#
+			<% } %>
+			
+			<% if(!isEmpty(status)){ %>
+					and ui.status like #'%$status$%'#
+			<% } %>
+			
+			<% if(!isEmpty(deptids)){ %>
+					and u.deptids = #'$deptids$'#
+			<% } %>
+    	]]>
+	</sql>
+
+</sql-statement>

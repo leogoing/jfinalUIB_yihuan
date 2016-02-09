@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript"
+	src="http://feather.aviary.com/js/feather.js"></script>
+<script type='text/javascript'>
+	var featherEditor = new Aviary.Feather({
+		apiKey : 'wanghuifang2008@yeah.net',
+		apiVersion : 3,
+		language: 'zh_HANS',
+		theme : 'light', // Check out our new 'light' and 'dark' themes!  
+		tools : 'all',
+		appendTo : '',
+		onSave : function(imageID, newURL) {
+			var img = document.getElementById(imageID);
+			img.src = newURL;
+		},
+		onError : function(errorObj) {
+			alert(errorObj.message);
+		}
+	});
+	function launchEditor(id, src) {
+		console.log("test");
+		featherEditor.launch({
+			image : id,
+			url : src
+		});
+		console.log("调用成功");
+		return false;
+	}
+</script>
+</head>
+<body>
+	<div id="body">
+		<ul class="breadcrumb">
+			<li><a href="#"
+				onclick="ajaxContent('/jf/platform/index/content');">${i18nMap["admin.common.mainPage"]}</a>
+				<span class="divider">/</span></li>
+			<li><a href="#">${i18nMap["admin.unitpic.common.name"]}</a></li>
+		</ul>
+	</div>
+	<div>
+		<div id='injection_site'></div>
+
+		<img id='image1'
+			src='http://images.aviary.com/imagesv5/feather_default.jpg' />
+	</div>
+	<p>
+		<input type='button' value="编辑图片"
+			onclick="return launchEditor('image1', 'http://images.aviary.com/imagesv5/feather_default.jpg');" />
+	</p>
+
+</body>
+</html>

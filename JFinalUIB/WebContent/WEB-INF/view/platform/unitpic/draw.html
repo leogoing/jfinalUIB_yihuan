@@ -1,0 +1,79 @@
+ <!doctype html>
+<html>
+<head>
+ <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+</head>
+<body>
+	<div id="div" style="position:absolute;"> DRAW</div>
+</body>
+<script type="text/javascript" src="${cxt!}/jsFile/jquery/jquery-1.6.2.min.js"></script>
+<script type="text/javascript">
+	//opts.pw: 点的宽度
+	//opts.ph: 点的高度， 一般与opts.pw相等
+	//opts.color: 点的颜色
+	//opts.point: 表示点的位置，point[0]: 水平位置， point[1]: 垂直位置point[2]为点的标签
+	//注意：position属性，必须为absolute; 
+
+	//描点，参数有点的大小，颜色，点的坐标和标签; 很明显opts参数是一个对象
+	function drawPoint(opts){
+		document.write("<span id='"+opts.point[0]+""+opts.point[1]+"' style='display: inline-block; width: "+opts.pw+"px; height: "+opts.ph+"px; background-color: "+opts.color+"; position: absolute "+opts.point[0]+"px; top: "+opts.point[1]+"px;'>"+
+			(opts.point[2]?("<div style='position: relative;'><span style='position: absolute; left: 5px; bottom: 1px; text-align: left; width: 100px;'>"+opts.point[2]+"</span></div>"):"")+"</span>");
+	}
+	//画线//pstart 起点//pend 终点//opts 参数
+	function drawLine(pstart, pend, opts){    
+		var ph = 1;    var pw = 1;    var color = "DarkRed";    
+		if(opts){        
+			color = opts.color ? opts.color: color;   
+		}    
+		var slope; //斜率    
+		var noSlope = false; //是否有斜率    
+		var hdist = pend[0] - pstart[0];    
+		var vdist = pend[1] - pstart[1];    
+		if(hdist != 0){        
+			slope =  Math.abs(vdist/hdist);  //计算斜率    
+		}else{       
+			noSlope = true; //当hdist=0时，直线没有斜率    
+		}    
+		var gapp = pw > ph ? ph : pw; //默认相邻点（左上角的像素点）间的距离        
+		var diagonal = Math.sqrt(Math.pow(hdist,2) + Math.pow(vdist,2)); //斜边长度    
+		var pn = parseInt(diagonal/gapp); //计算两点之间的点的数量    
+		if(pn < 3){pn=pn*3+1}; //如果点的数量小于3，则加大点数；为什么+1呢，是保证pn=0时至少有一个点   
+		var vgap = Math.abs(vdist)/pn; //相邻两点间的垂直距离    
+		var hgap = Math.abs(hdist)/pn; //相邻两点间的水平距离    
+		for(var i = 0; i< pn ; i++){        //描点        //hgap 相邻两点间的水平距离        //vgap 相邻两点间的垂直距离        //hgap*i*(pend[0]<pstart[0]?-1:1)*(noSlope?0:1) 相对于起点的水平偏移        //vgap*i*(pend[1]<pstart[1]?-1:1) 相对于起点的垂直偏移        //(pend[0]<pstart[0]?-1:1) 水平偏移方向        //(pend[1]<pstart[1]?-1:1) 垂直偏移方向        //(noSlope?0:1) 直线没有斜率时，水平偏移为0       
+			drawPoint({ pw: pw,   ph: ph,    color: color,     point: [(hgap*i*(pend[0]<pstart[0]?-1:1)*(noSlope?0:1)+pstart[0]),(vgap*i*(pend[1]<pstart[1]?-1:1)+pstart[1])]       
+			});    
+		}
+	}
+	
+	//折线形//ps 点的一维数组
+	function drawPolyline(ps){    if(ps){        //画线       
+		for(var i = 0; i<ps.length-1; i++){    drawLine(ps[i], ps[i+1]);    }        //描拐点        
+			for(var i = 0; i<ps.length; i++){     drawPoint({  pw: 3,  ph: 3,  color: 'RED',    point: ps[i] 
+			}); 
+		} 
+	}}
+	
+	//多边形//ps 点的一维数组
+	function drawPolygon(ps){    if(ps){        //画线       
+		for(var i = 0; i<ps.length-1; i++){ 
+			drawLine(ps[i], ps[i+1]);        
+		}        //使闭合        
+		if(ps.length > 2){
+			drawLine(ps[ps.length-1], ps[0])  
+		}        //描拐点        
+		for(var i = 0; i<ps.length; i++){       
+			drawPoint({  pw: 3,    ph: 3,    color: 'RED',   point: ps[i] 
+   			});       
+		}   
+	}}
+	
+	//画矩形//leftTop 左上角的点的位置//width 宽//high 高
+	function drawRectangle(leftTop, width, high){    
+		drawPolygon([  leftTop,   [leftTop[0], leftTop[1]+high],    [leftTop[0]+width, leftTop[1]+high],   [leftTop[0]+width, leftTop[1]]  ]);    //填充    //
+		document.write("<span style='height: "+(high-1)+"px; width: "+(width-1)+"px; background-color: "+"Green"+"; position: absolute; left:"+(leftTop[0]+1)+"px; top: "+(leftTop[1]+1)+"'></span>");
+	}
+	
+	
+</script>
+</html>

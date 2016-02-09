@@ -1,0 +1,287 @@
+<div class="container-fluid">
+	
+	<select id="type">
+	 	<option value="浏览">浏览</option>
+	    <option value="新增">新增</option>
+	    <option value="修改">修改</option>
+	</select>
+
+	<div class="row-fluid">
+	  <div class="span12">
+	    <div id="map"  class="map" style="position:absolute;z-index:2; width:100%; height:100%"></div>
+	    <div id="wrapper">
+			<div id="location"></div>
+		    <div id="scale"></div>
+    	</div>
+	    
+	    <div id="content2" style="position:absolute;z-index:3;opacity:1;">
+		  <!-- content starts -->
+					
+		  <!-- content ends -->
+		</div><!--/#content.span10-->
+		
+		<div id="myUpdateModal" class="modal hide" style="left:30%;width:80%"></div>
+	  </div>
+	</div>
+	
+	<div id="nodelist">
+        <em>Click on the map to get feature info</em>
+	</div>
+
+</div>
+
+<script>
+	// WMS方式 访问兴趣点
+	var wmsSource = new ol.source.ImageWMS({
+		url: 'http://localhost:8081/geoserver/wms',
+		params: {LAYERS: 'jyx:pt_unit'},
+		serverType: 'geoserver',
+		crossOrigin: ''
+		});
+		var wmsLayer = new ol.layer.Image({
+		source: wmsSource
+	});
+
+	// WFS方式访问兴趣点
+	var geojsonFormat = new ol.format.GeoJSON();
+	var vectorSource = new ol.source.Vector({
+	  loader: function(extent, resolution, projection) {
+	    var url = 'http://localhost:8081/geoserver/jyx/ows?service=WFS&version=1.0.0&' +
+		'request=GetFeature&typeName=jyx:pt_unit&maxFeatures=50&outputFormat=' + 
+		'application/json&' +
+		'srsname=EPSG:900913&bbox=' + extent.join(',') + ',EPSG:900913';
+	
+	    // use jsonp: false to prevent jQuery from adding the "callback"
+	    // parameter to the URL
+	    $.ajax({url: url, dataType: 'jsonp', jsonp: true});
+	    $.ajax({
+	         url : url
+	    }).done(function(response) {
+			console.log('response', response);
+			vectorSource.addFeatures(geojsonFormat.readFeatures(response));
+	    });
+	  },
+	  strategy: ol.loadingstrategy.tile(ol.tilegrid.createXYZ({
+	    maxZoom: 19
+	  }))
+	});
+
+	var vector = new ol.layer.Vector({
+	  source: vectorSource,
+	  style: new ol.style.Style({
+	    fill: new ol.style.Fill({
+	      color: 'rgba(255, 255, 255, 0.2)'
+	    }),
+	    stroke: new ol.style.Stroke({
+	      color: '#ffcc33',
+	      width: 2
+	    }),
+	    image: new ol.style.Circle({
+	      radius: 7,
+	      fill: new ol.style.Fill({
+	        color: '#ffcc33'
+	      })
+	    })
+	  })
+	});
+	
+	var draw = new ol.interaction.Draw({
+	  source: vectorSource,
+	  type: ('Point')
+	});
+	draw.setActive(false);
+
+	var select = new ol.interaction.Select();
+	select.setActive(false);
+	var selected = select.getFeatures();
+
+	var modify = new ol.interaction.Modify({
+		features: selected
+	});
+	modify.setActive(false);
+
+	var typeSelect = document.getElementById('type');
+	typeSelect.onchange = function(e) {
+	  draw.setActive(typeSelect.value === '新增');
+	  select.setActive(typeSelect.value === '修改');
+	  modify.setActive(typeSelect.value === '修改');
+	};
+	
+	/*var dirty = {};
+	selected.on('add', function(evt) {
+		alert('add');
+	  var feature = evt.element;
+	  feature.on('change', function(evt) {
+	    dirty[evt.target.getId()] = true;
+	  });
+	});*/
+	
+	selected.on('remove', function(evt) { // 修改结束调用
+	  var feature = evt.element;
+	  var fid = feature.getId();
+	  
+	  // 修改兴趣点位置，更新其位置
+	  console.log('feature.getGeometry()', feature.getGeometry());
+	  console.log('Coordinates', feature.getGeometry().getCoordinates());
+	  
+	  // ajax调用后台保存坐标到重点单位
+
+	});
+
+	draw.on('drawend', function(evt) { // 新增后调用
+		var feature = evt.feature;
+		// 添加 代码，如果是新增兴趣点，弹出新增加重点单位框
+	  	
+		//featue.setId(...);
+	  	
+	});
+
+	// 光标位置控件，显示当前指针坐标
+	var mousePositionControl = new ol.control.MousePosition({
+	    className: 'custom-mouse-position',
+	    target: document.getElementById('location'),
+	    coordinateFormat: ol.coordinate.createStringXY(5),
+	    undefinedHTML: '&nbsp;'
+	});
+
+	// map所包含的图层
+	var layers = [
+		new ol.layer.Tile({
+			source: new ol.source.TileWMS({ // 背景层
+				url: 'http://127.0.0.1:8080/geowebcache/service/wms',
+				params: {'LAYERS': 'nanchang2',Width:256, Height:256, 'SRS':'EPSG:4326', FORMAT:'image/jpeg', VERSION:'1.1.1' }
+			})
+		}),
+		vector //wmsLayer // 兴趣点层
+	];
+
+	// 投影
+	var projection = new ol.proj.Projection({
+	    code: 'EPSG:900913',
+	    units: 'm',
+	    axisOrientation: 'neu'
+	});
+
+	// 地图对象 
+	var map = new ol.Map({
+		controls: ol.control.defaults({ attribution: false }).extend([mousePositionControl]),
+		interactions: ol.interaction.defaults().extend([draw, select, modify]),
+		layers: layers,
+		target: 'map',
+		view: new ol.View({
+			center: ol.proj.fromLonLat([115.89, 28.68],projection),
+			zoom: 12
+		})
+	});
+
+	// 地图分辨率显示
+	map.getView().on('change:resolution', function(evt) {
+	    var resolution = evt.target.get('resolution');
+	    var units = map.getView().getProjection().getUnits();
+	    var dpi = 25.4 / 0.28;
+	    var mpu = ol.proj.METERS_PER_UNIT[units];
+	    var scale = resolution * mpu * 39.37 * dpi;
+	    if (scale >= 9500 && scale <= 950000) {
+	      scale = Math.round(scale / 1000) + "K";
+	    } else if (scale >= 950000) {
+	      scale = Math.round(scale / 1000000) + "M";
+	    } else {
+	      scale = Math.round(scale);
+	    }
+	    document.getElementById('scale').innerHTML = "Scale = 1 : " + scale;
+	});
+	
+	map.on('click', function(evt) {
+		if(typeSelect.value === '浏览')
+			displayFeatureInfo(evt.pixel);
+	});
+	
+	var displayFeatureInfo = function(pixel) {
+		var features = [];
+		map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+			features.push(feature);
+		});
+		if (features.length > 0) {
+		    var info = [];
+		    var i, ii;
+		    for (i = 0, ii = features.length; i < ii; ++i) {
+		    	//alert(features[i].getId());
+		    	$('#content').parent().append('<div id="loading" class="center">Loading...<div class="center"></div></div>');
+	       		$.ajax({
+	       			type : "post",
+	       			url : cxt + "/jf/platform/unit/mapedit/" + features[i].getId().slice(8),
+	       			dataType : "html",
+	       			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+	       			async: false,
+	       			success:function(data){
+	       				$('#myUpdateModal').html(data);
+	       				$('#myUpdateModal').modal('show');
+	       		    	$('#loading').remove();
+	       				$('#content').fadeIn();
+	       			}
+	       		});
+
+		    }
+		} else {
+		}
+	};
+	
+	// 响应点击兴趣点，显示兴趣点属性
+	/*map.on('singleclick', function(evt) {
+        var view = map.getView();
+        var viewResolution = view.getResolution();
+        var url = wmsSource.getGetFeatureInfoUrl(
+          evt.coordinate, viewResolution, view.getProjection(),
+          {'INFO_FORMAT': 'text/xml', 'FEATURE_COUNT': 50});
+        if (url) {
+        	//document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
+        	//return;
+        	//alert(url);
+
+    		jQuery.support.cors = true;
+    		$.ajax({
+    			dataType:'xml',
+    			url:url,
+    			success:function(xml) { // 成功取得兴趣点信息
+
+    		       	var unit=xml.getElementsByTagName("jyx:pt_unit");
+    		       	//alert(unit[0].getElementsByTagName("jyx:unitid")[0].childNodes[0].nodeValue);
+    		       	if(unit !== null && unit[0] !== null && unit[0].getAttribute("fid") !== null) 
+    		       	{// 打开对话框编辑兴趣点
+
+    		       		//alert(unit[0].getAttribute("fid"));
+    		        		
+    		       		$('#content').parent().append('<div id="loading" class="center">Loading...<div class="center"></div></div>');
+    		       		$.ajax({
+    		       			type : "post",
+    		       			url : cxt + "/jf/platform/unit/mapedit/" + unit[0].getAttribute("fid").slice(8),
+    		       			dataType : "html",
+    		       			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+    		       			async: false,
+    		       			success:function(data){
+    		       				//alert(data);
+    		       				$('#myModal').html(data);
+    		       				$('#myModal').modal('show');
+    		       		    	$('#loading').remove();
+    		       				$('#content').fadeIn();
+    		       			}
+    		       		});
+    		       	}
+    		   	},
+    		   	error:function(XMLHttpRequest, textStatus, errorThrown){
+    		   		alert(errorThrown); 
+    		   		alert(XMLHttpRequest.status);
+    		   		alert(XMLHttpRequest.readyState);
+    		   		alert(textStatus);
+    		   	}
+    		});
+        }
+    });*/
+		
+	/*map.on('pointermove', function(evt) {
+	  if (evt.dragging) {
+	    return;
+	  }
+	});*/
+
+</script>
